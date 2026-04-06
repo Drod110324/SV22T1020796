@@ -1,0 +1,166 @@
+@model SV22T1020796.Models.Common.PagedResult<SV22T1020796.Models.Catalog.Product>
+@{
+    Layout = null;
+}
+<style>
+    .product-name {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        height: 48px; /* Tầm 2 dòng cho font-size trung bình */
+        line-height: 24px;
+        margin-bottom: 0;
+        vertical-align: top;
+    }
+</style>
+@if (Model.DataItems.Any())
+{
+    @foreach (var item in Model.DataItems)
+    {
+        <form action="~/Order/AddToCart" method="post" class="border rounded p-2 mb-2 form-add-to-cart" style="height: 185px; background: #fff;">
+            <input type="hidden" name="ProductID" value="@item.ProductID" />
+            <input type="hidden" name="ProductName" value="@item.ProductName" />
+            <input type="hidden" name="Unit" value="@item.Unit" />
+            <input type="hidden" name="Photo" value="@item.Photo" />
+
+            <div style="height: 50px; overflow: hidden;">
+                <strong>
+                    <span class="text-primary">@item.ProductID</span> - 
+                    <span class="product-name d-inline-block">@item.ProductName</span>
+                </strong>
+            </div>
+
+            <div class="row g-2 mt-1">
+                <div class="col-4">
+                    <div style="height: 100px; display: flex; align-items: center; justify-content: center; background: #f8f9fa;" class="border rounded">
+                        <img src="@(string.IsNullOrEmpty(item.Photo) ? Url.Content("~/images/products/no-image.png") : Url.Content($"~/images/products/{item.Photo}"))"
+                             style="max-height: 100%; max-width: 100%; object-fit: contain;" />
+                    </div>
+                </div>
+                <div class="col-8">
+                    <div class="row g-2">
+                        <div class="col-7">
+                            <label class="form-label mb-0 x-small text-muted">Giá</label>
+                            <input type="text"
+                                   class="form-control form-control-sm text-end money-input bg-light"
+                                   name="SalePrice"
+                                   value="@item.Price"
+                                   readonly />
+                        </div>
+                        <div class="col-5">
+                            <label class="form-label mb-0 x-small text-muted">SL</label>
+                            <input type="number"
+                                   name="Quantity"
+                                   min="1"
+                                   value="1"
+                                   class="form-control form-control-sm text-center" />
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-sm btn-primary mt-2 w-100 py-1 shadow-sm">
+                        <i class="bi bi-cart-plus"></i>
+                        Thêm vào giỏ
+                    </button>
+                </div>
+            </div>
+        </form>
+    }
+
+    @if (Model.PageCount > 1)
+    {
+        <div id="paginationHolder">
+            <style>
+                .product-pagination .page-item .page-link {
+                    border-radius: 0 !important;
+                    border-color: #dee2e6;
+                    color: #007bff;
+                    width: 32px;
+                    height: 32px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    margin-left: -1px;
+                    font-size: 13px;
+                    padding: 0;
+                }
+                .product-pagination .page-item.active .page-link {
+                    background-color: #007bff;
+                    border-color: #007bff;
+                    color: #fff;
+                }
+                .product-pagination .page-item.disabled .page-link {
+                    color: #6c757d;
+                    pointer-events: none;
+                    background-color: #fff;
+                }
+                .product-pagination .page-item:first-child .page-link {
+                    margin-left: 0;
+                }
+            </style>
+            <ul class="pagination pagination-sm product-pagination mb-0 mt-2 justify-content-center">
+                @if (Model.Page > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="javascript:;" onclick="doSearchProduct(@(Model.Page - 1))">
+                            <i class="bi bi-chevron-left small"></i>
+                        </a>
+                    </li>
+                }
+
+                @{
+                    int delta = 2;
+                    int first = 1;
+                    int last = Model.PageCount;
+                    int start = Math.Max(first, Model.Page - delta);
+                    int end = Math.Min(last, Model.Page + delta);
+
+                    if (start > first)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="javascript:;" onclick="doSearchProduct(1)">1</a>
+                        </li>
+                        if (start > first + 1)
+                        {
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        }
+                    }
+
+                    for (int i = start; i <= end; i++)
+                    {
+                        <li class="page-item @(i == Model.Page ? "active" : "")">
+                            <a class="page-link" href="javascript:;" onclick="doSearchProduct(@i)">@i</a>
+                        </li>
+                    }
+
+                    if (end < last)
+                    {
+                        if (end < last - 1)
+                        {
+                            <li class="page-item disabled"><span class="page-link">...</span></li>
+                        }
+                        <li class="page-item">
+                            <a class="page-link" href="javascript:;" onclick="doSearchProduct(@last)">@last</a>
+                        </li>
+                    }
+                }
+
+                @if (Model.Page < Model.PageCount)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="javascript:;" onclick="doSearchProduct(@(Model.Page + 1))">
+                            <i class="bi bi-chevron-right small"></i>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+}
+else
+{
+    <div class="text-center text-muted py-3">
+        Không tìm thấy mặt hàng nào
+    </div>
+}
+

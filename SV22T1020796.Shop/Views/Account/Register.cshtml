@@ -1,0 +1,72 @@
+@{
+    ViewData["Title"] = "Đăng ký tài khoản";
+}
+
+<div class="container my-5 py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-lg" style="border-radius: 1.5rem;">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <i class="fa-solid fa-user-plus fs-1 text-primary mb-3"></i>
+                        <h2 class="fw-bold">Tạo tài khoản mới</h2>
+                        <p class="text-muted">Tham gia cùng NHV Shop để nhận nhiều ưu đãi hấp dẫn.</p>
+                    </div>
+
+                    @if (ViewBag.ErrorMessage != null)
+                    {
+                        <div class="alert alert-danger border-0 small mb-4" style="border-radius: 1rem;">
+                            <i class="fa-solid fa-circle-exclamation me-2"></i>@ViewBag.ErrorMessage
+                        </div>
+                    }
+                    @if (ViewBag.SuccessMessage != null)
+                    {
+                        <div class="alert alert-success border-0 small mb-4" style="border-radius: 1rem;">
+                            <i class="fa-solid fa-circle-check me-2"></i>@ViewBag.SuccessMessage
+                            <div class="mt-2 text-center">
+                                <a href="~/Account/Login" class="btn btn-sm btn-success rounded-pill px-4">Đăng nhập ngay</a>
+                            </div>
+                        </div>
+                    }
+
+                    <form method="post" action="/Account/Register" novalidate>
+                        @Html.ValidationSummary(true, "", new { @class = "text-danger small mb-3" })
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label text-muted small fw-bold">Họ và tên</label>
+                                <input type="text" name="customerName" class="form-control border-0 bg-light py-2 @(ViewData.ModelState["customerName"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Nhập họ và tên..." style="border-radius: 0.8rem;" value="@(Context.Request.Method == "POST" ? Context.Request.Form["customerName"] : "")" required>
+                                @Html.ValidationMessage("customerName", "", new { @class = "text-danger small mt-1 d-block" })
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted small fw-bold">Số điện thoại</label>
+                                <input type="tel" name="phone" class="form-control border-0 bg-light py-2 @(ViewData.ModelState["phone"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Số điện thoại..." style="border-radius: 0.8rem;" value="@(Context.Request.Method == "POST" ? Context.Request.Form["phone"] : "")" required>
+                                @Html.ValidationMessage("phone", "", new { @class = "text-danger small mt-1 d-block" })
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted small fw-bold">Email</label>
+                                <input type="email" name="email" class="form-control border-0 bg-light py-2 @(ViewData.ModelState["email"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="Email đăng nhập..." style="border-radius: 0.8rem;" value="@(Context.Request.Method == "POST" ? Context.Request.Form["email"] : "")" required>
+                                @Html.ValidationMessage("email", "", new { @class = "text-danger small mt-1 d-block" })
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted small fw-bold">Mật khẩu</label>
+                                <input type="password" name="password" class="form-control border-0 bg-light py-2 @(ViewData.ModelState["password"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="********" style="border-radius: 0.8rem;" required>
+                                @Html.ValidationMessage("password", "", new { @class = "text-danger small mt-1 d-block" })
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label text-muted small fw-bold">Xác nhận mật khẩu</label>
+                                <input type="password" name="confirmPassword" class="form-control border-0 bg-light py-2 @(ViewData.ModelState["confirmPassword"]?.Errors.Count > 0 ? "is-invalid" : "")" placeholder="********" style="border-radius: 0.8rem;" required>
+                                @Html.ValidationMessage("confirmPassword", "", new { @class = "text-danger small mt-1 d-block" })
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100 py-3 fw-bold border-0 shadow mt-4" style="border-radius: 1rem;">Đăng ký</button>
+                    </form>
+
+                    <div class="text-center mt-5">
+                        <span class="text-muted small">Đã có tài khoản? </span>
+                        <a href="~/Account/Login" class="text-primary small fw-bold text-decoration-none">Đăng nhập</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

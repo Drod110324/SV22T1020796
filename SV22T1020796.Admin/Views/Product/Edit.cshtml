@@ -1,0 +1,308 @@
+@model SV22T1020796.Models.Catalog.Product
+@{
+    var categories = ViewBag.Categories as SV22T1020796.Models.Common.PagedResult<SV22T1020796.Models.Catalog.Category>;
+    var suppliers = ViewBag.Suppliers as SV22T1020796.Models.Common.PagedResult<SV22T1020796.Models.Partner.Supplier>;
+    string photoSrc = !string.IsNullOrEmpty(Model?.Photo) ? $"~/images/products/{Model.Photo}" : "~/images/products/nophoto.png";
+    bool isCreate = (Model?.ProductID == 0);
+}
+@section PageToolBar {
+    <button type="submit" form="formEdit" class="btn btn-primary">
+        <i class="bi bi-save"></i>
+        Lưu dữ liệu
+    </button>
+    <a href="~/Product" class="btn btn-secondary ms-1">
+        <i class="bi bi-arrow-left"></i>
+        Quay lại
+    </a>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-1"></i>
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row justify-content-center">
+    <div class="col-12">
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-box-seam me-2"></i>
+                    Thông tin mặt hàng
+                </h5>
+            </div>
+
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-circle me-1"></i>
+                        <strong>Vui lòng kiểm tra lại dữ liệu:</strong>
+                        <ul class="mb-0 mt-1">
+                            @foreach (var state in ViewData.ModelState)
+                            {
+                                @foreach (var error in state.Value.Errors)
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                }
+
+                <form id="formEdit" action="~/Product/Save" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="ProductID" value="@Model?.ProductID" />
+                    <input type="hidden" name="Photo" value="@Model?.Photo" />
+
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">Tên mặt hàng</label>
+                        <div class="col-sm-9">
+                            <input type="text" name="ProductName" class="form-control"
+                                   value="@Model?.ProductName"
+                                   placeholder="Nhập tên mặt hàng" autofocus required />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">Loại hàng</label>
+                        <div class="col-sm-3">
+                            <select class="form-select" name="CategoryID">
+                                <option value="">-- Chọn loại hàng --</option>
+                                @if (categories?.DataItems != null)
+                                {
+                                    @foreach (var c in categories.DataItems)
+                                    {
+                                        <option value="@c.CategoryID"
+                                                selected="@(Model?.CategoryID == c.CategoryID)">
+                                            @c.CategoryName
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+
+                        <label class="col-sm-2 col-form-label text-end">Nhà cung cấp</label>
+                        <div class="col-sm-4">
+                            <select class="form-select" name="SupplierID">
+                                <option value="">-- Chọn nhà cung cấp --</option>
+                                @if (suppliers?.DataItems != null)
+                                {
+                                    @foreach (var s in suppliers.DataItems)
+                                    {
+                                        <option value="@s.SupplierID"
+                                                selected="@(Model?.SupplierID == s.SupplierID)">
+                                            @s.SupplierName
+                                        </option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">Đơn vị tính</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="Unit" class="form-control"
+                                   value="@Model?.Unit"
+                                   placeholder="cái, hộp, kg..." />
+                        </div>
+
+                        <label class="col-sm-2 col-form-label text-end">Giá</label>
+                        <div class="col-sm-4">
+                            <input type="number" name="Price" class="form-control"
+                                   value="@Model?.Price"
+                                   placeholder="Giá bán" min="0" />
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">Trạng thái</label>
+                        <div class="col-sm-9">
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox"
+                                       name="IsSelling" value="true" id="IsSelling"
+                                       @(Model?.IsSelling == true ? "checked" : "") />
+                                <label class="form-check-label" for="IsSelling">
+                                    Đang bán
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">Ảnh</label>
+                        <div class="col-sm-9">
+                            <input type="file" name="uploadPhoto" class="form-control"
+                                   accept="image/*"
+                                   onchange="document.getElementById('imgPreview').src = window.URL.createObjectURL(this.files[0])" />
+                            <div class="mt-2">
+                                <img id="imgPreview" src="@photoSrc"
+                                     class="img-thumbnail" style="max-height: 160px;" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-3 col-form-label">Mô tả</label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" name="ProductDescription"
+                                      rows="3" placeholder="Nhập mô tả mặt hàng">@Model?.ProductDescription</textarea>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (!isCreate)
+{
+    var photos = ViewBag.Photos as List<SV22T1020796.Models.Catalog.ProductPhoto> ?? new List<SV22T1020796.Models.Catalog.ProductPhoto>();
+    var attributes = ViewBag.Attributes as List<SV22T1020796.Models.Catalog.ProductAttribute> ?? new List<SV22T1020796.Models.Catalog.ProductAttribute>();
+
+    <!-- Thư viện ảnh -->
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card card-info card-outline mt-4">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col">
+                            <h6 id="photos" class="mb-0">
+                                <i class="bi bi-images me-2"></i>
+                                Thư viện ảnh
+                            </h6>
+                        </div>
+                        <div class="col text-end">
+                            <a class="btn btn-sm btn-primary" href="~/Product/CreatePhoto/@Model?.ProductID">
+                                <i class="bi bi-plus-circle me-1"></i> Thêm ảnh
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-1">
+                    <table class="table table-bordered table-hover mb-0">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th style="width:120px">Ảnh</th>
+                                <th>Mô tả</th>
+                                <th style="width:120px" class="text-center">Thứ tự</th>
+                                <th style="width:120px">Hiển thị</th>
+                                <th style="width:100px"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (photos.Count > 0)
+                            {
+                                @foreach (var p in photos)
+                                {
+                                    string pSrc = !string.IsNullOrEmpty(p.Photo) ? $"~/images/products/{p.Photo}" : "~/images/products/nophoto.png";
+                                    <tr>
+                                        <td class="text-center">
+                                            <img src="@pSrc" class="img-thumbnail" style="max-height:80px;" />
+                                        </td>
+                                        <td>@p.Description</td>
+                                        <td class="text-center">@p.DisplayOrder</td>
+                                        <td class="text-center">
+                                            @if (!p.IsHidden)
+                                            {
+                                                <span class="badge bg-success">Hiện</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-secondary">Ẩn</span>
+                                            }
+                                        </td>
+                                        <td class="text-center text-nowrap">
+                                            <a class="btn btn-sm btn-primary" href="~/Product/EditPhoto/@Model?.ProductID?photoId=@p.PhotoID">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a class="btn btn-sm btn-danger" href="~/Product/DeletePhoto/@Model?.ProductID?photoId=@p.PhotoID">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="5" class="text-center text-muted py-2">Chưa có ảnh nào.</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Thuộc tính mặt hàng -->
+    <div class="row justify-content-center">
+        <div class="col-12">
+            <div class="card card-success card-outline mt-4">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="col">
+                            <h6 id="attributes" class="card-title mb-0">
+                                <i class="bi bi-list-check me-2"></i>
+                                Thuộc tính mặt hàng
+                            </h6>
+                        </div>
+                        <div class="col text-end">
+                            <a class="btn btn-sm btn-primary" href="~/Product/CreateAttribute/@Model?.ProductID">
+                                <i class="bi bi-plus"></i> Thêm thuộc tính
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body p-1">
+                    <table class="table table-bordered table-hover mb-0">
+                        <thead class="table-secondary">
+                            <tr>
+                                <th>Tên thuộc tính</th>
+                                <th>Giá trị</th>
+                                <th style="width:120px" class="text-center">Thứ tự</th>
+                                <th style="width:100px"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (attributes.Count > 0)
+                            {
+                                @foreach (var a in attributes)
+                                {
+                                    <tr>
+                                        <td>@a.AttributeName</td>
+                                        <td>@a.AttributeValue</td>
+                                        <td class="text-center">@a.DisplayOrder</td>
+                                        <td class="text-center text-nowrap">
+                                            <a class="btn btn-sm btn-primary" href="~/Product/EditAttribute/@Model?.ProductID?attributeId=@a.AttributeID">
+                                                <i class="bi bi-pencil"></i>
+                                            </a>
+                                            <a class="btn btn-sm btn-danger" href="~/Product/DeleteAttribute/@Model?.ProductID?attributeId=@a.AttributeID">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="4" class="text-center text-muted py-2">Chưa có thuộc tính nào.</td></tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}

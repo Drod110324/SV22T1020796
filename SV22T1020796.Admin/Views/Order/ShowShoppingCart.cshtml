@@ -1,0 +1,75 @@
+@model IEnumerable<SV22T1020796.Models.Sales.OrderDetailViewInfo>
+@{
+    Layout = null;
+    decimal total = 0;
+}
+<table class="table table-bordered table-hover align-middle">
+    <thead class="table-success">
+        <tr>
+            <th class="text-center">#</th>
+            <th style="width:auto">Tên hàng</th>
+            <th class="text-center" style="width:70px">ĐVT</th>
+            <th class="text-center" style="width:80px">SL</th>
+            <th class="text-end" style="width:120px">Giá</th>
+            <th class="text-end" style="width:120px">Thành tiền</th>
+            <th style="width:80px"></th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model.Any())
+        {
+            int i = 0;
+            foreach (var item in Model)
+            {
+                i++;
+                total += item.TotalPrice;
+                <tr>
+                    <td class="text-center">@i</td>
+                    <td>@item.ProductName</td>
+                    <td class="text-center">@item.Unit</td>
+                    <td class="text-center">
+                        <input type="number" 
+                               class="form-control form-control-sm text-center cart-item-qty" 
+                               value="@item.Quantity" 
+                               min="1"
+                               data-id="@item.ProductID"
+                               data-price="@item.SalePrice"
+                               onchange="updateCartItem(this)"/>
+                    </td>
+                    <td class="text-end cart-item-price">@item.SalePrice.ToString("N0")</td>
+                    <td class="text-end">@item.TotalPrice.ToString("N0")</td>
+                    <td class="text-center">
+                        <a href="~/Order/RemoveFromCart/@item.ProductID" 
+                           class="btn btn-sm btn-danger btn-remove-from-cart"
+                           onclick="removeFromCart(event, this)">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="7" class="text-center text-muted py-3">Giỏ hàng trống</td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <th colspan="5" class="text-end">Tổng cộng:</th>
+            <th class="text-end text-danger fs-5">@total.ToString("N0")</th>
+            <th></th>
+        </tr>
+    </tfoot>
+</table>
+
+<div class="text-end mt-2">
+    <a href="~/Order/ClearCart" 
+       class="btn btn-sm btn-outline-danger"
+       onclick="clearCart(event, this)">
+        <i class="bi bi-x-circle"></i> Xóa giỏ hàng
+    </a>
+</div>
+
+

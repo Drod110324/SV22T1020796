@@ -1,0 +1,212 @@
+@model SV22T1020796.Models.Common.PagedResult<SV22T1020796.Models.Catalog.Product>
+@{
+    ViewBag.Title = "Quản lý Mặt hàng";
+    var categories = ViewBag.Categories as SV22T1020796.Models.Common.PagedResult<SV22T1020796.Models.Catalog.Category>;
+    var suppliers = ViewBag.Suppliers as SV22T1020796.Models.Common.PagedResult<SV22T1020796.Models.Partner.Supplier>;
+    var currentCategoryID = Context.Request.Query["categoryID"].ToString();
+    var currentSupplierID = Context.Request.Query["supplierID"].ToString();
+    var currentMinPrice = Context.Request.Query["minPrice"].ToString();
+    var currentMaxPrice = Context.Request.Query["maxPrice"].ToString();
+}
+@section PageToolBar {
+    <a href="~/Product/Create" class="btn btn-primary">
+        <i class="bi bi-plus-circle me-1"></i>
+        Bổ sung
+    </a>
+}
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-1"></i>
+        @TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card mb-3">
+    <div class="card-body">
+        <form id="formSearch" action="~/Product" method="get">
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <label class="form-label">Loại hàng</label>
+                    <select class="form-select" name="categoryID">
+                        <option value="0">-- Tất cả --</option>
+                        @if (categories?.DataItems != null)
+                        {
+                            @foreach (var c in categories.DataItems)
+                            {
+                                <option value="@c.CategoryID"
+                                        selected="@(currentCategoryID == c.CategoryID.ToString())">
+                                    @c.CategoryName
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-2">
+                    <label class="form-label">Nhà cung cấp</label>
+                    <select class="form-select" name="supplierID">
+                        <option value="0">-- Tất cả --</option>
+                        @if (suppliers?.DataItems != null)
+                        {
+                            @foreach (var s in suppliers.DataItems)
+                            {
+                                <option value="@s.SupplierID"
+                                        selected="@(currentSupplierID == s.SupplierID.ToString())">
+                                    @s.SupplierName
+                                </option>
+                            }
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label">Khoảng giá</label>
+                    <div class="input-group">
+                        <input type="text" name="minPrice" class="form-control"
+                               value="@currentMinPrice" placeholder="Từ" />
+                        <span class="input-group-text">-</span>
+                        <input type="text" name="maxPrice" class="form-control"
+                               value="@currentMaxPrice" placeholder="Đến" />
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Tên mặt hàng</label>
+                    <div class="input-group">
+                        <input type="text" name="searchValue" class="form-control"
+                               value="@Model.SearchValue" placeholder="Tên mặt hàng..." autofocus />
+                        <button type="submit" class="btn btn-info d-flex align-items-center">
+                            <i class="bi bi-search me-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="mb-2 text-muted">
+    Danh sách này có <strong>@Model.RowCount</strong> mặt hàng
+</div>
+
+<div class="card">
+    <div class="card-body p-1">
+        <table class="table table-bordered table-hover mb-0 align-middle">
+            <thead class="table-secondary">
+                <tr>
+                    <th style="width:80px;">Ảnh</th>
+                    <th>Mặt hàng</th>
+                    <th style="width:120px;">Đơn vị</th>
+                    <th style="width:120px;">Giá</th>
+                    <th class="text-center" style="width:140px;">Trạng thái</th>
+                    <th class="text-center" style="width:100px;">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.DataItems != null && Model.DataItems.Count > 0)
+                {
+                    @foreach (var item in Model.DataItems)
+                    {
+                        string imgSrc = !string.IsNullOrEmpty(item.Photo) ? $"~/images/products/{item.Photo}" : "~/images/products/nophoto.png";
+                        <tr>
+                            <td class="text-center">
+                                <img src="@Url.Content(imgSrc)" 
+                                     class="img-thumbnail" 
+                                     alt="@item.ProductName" 
+                                     style="width: 60px; height: 60px; object-fit: cover;" 
+                                     onerror="this.src='@Url.Content("~/images/products/nophoto.png")'" />
+                            </td>
+                            <td>
+                                @item.ProductName<br />
+                                <small class="text-muted">@item.ProductDescription</small>
+                            </td>
+                            <td>@item.Unit</td>
+                            <td class="text-end">@item.Price.ToString("N0")</td>
+                            <td class="text-center">
+                                @if (item.IsSelling)
+                                {
+                                    <span class="badge bg-success">Đang bán</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Ngừng bán</span>
+                                }
+                            </td>
+                            <td class="text-center text-nowrap">
+                                <a href="~/Product/Edit/@item.ProductID" class="btn btn-sm btn-primary">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <a href="~/Product/Delete/@item.ProductID" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-3">
+                            <i class="bi bi-inbox me-1"></i>
+                            Không tìm thấy mặt hàng nào.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.PageCount > 1)
+    {
+        <div class="card-footer">
+            <ul class="pagination justify-content-center mb-0">
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="~/Product?page=@(Model.Page - 1)&searchValue=@Model.SearchValue&categoryID=@currentCategoryID&supplierID=@currentSupplierID&minPrice=@currentMinPrice&maxPrice=@currentMaxPrice">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                }
+
+                @foreach (var pageItem in Model.GetDisplayPages(3))
+                {
+                    if (pageItem.IsEllipsis)
+                    {
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="page-item @(pageItem.IsCurrent ? "active" : "")">
+                            <a class="page-link" href="~/Product?page=@pageItem.Page&searchValue=@Model.SearchValue&categoryID=@currentCategoryID&supplierID=@currentSupplierID&minPrice=@currentMinPrice&maxPrice=@currentMaxPrice">
+                                @pageItem.Page
+                            </a>
+                        </li>
+                    }
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="~/Product?page=@(Model.Page + 1)&searchValue=@Model.SearchValue&categoryID=@currentCategoryID&supplierID=@currentSupplierID&minPrice=@currentMinPrice&maxPrice=@currentMaxPrice">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+</div>

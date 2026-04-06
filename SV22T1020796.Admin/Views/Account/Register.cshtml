@@ -1,0 +1,101 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LiteCommerce | Đăng ký</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/lib/adminlte/css/adminlte.css" />
+</head>
+<body class="login-page bg-body-secondary">
+    <div class="login-box">
+        <div class="login-logo">
+            <a href="#"><b>Lite</b>Commerce</a>
+        </div>
+        <div class="card card-outline card-primary">
+            <div class="card-body login-card-body">
+                <p class="login-box-msg">Đăng ký tài khoản mới</p>
+
+                <form action="~/Account/Register" method="post">
+                    @Html.AntiForgeryToken()
+
+                    @* Họ và tên *@
+                    <div class="input-group mb-1">
+                        <input type="text" class="form-control @(ViewData.ModelState.ContainsKey("FullName") && ViewData.ModelState["FullName"].Errors.Count > 0 ? "is-invalid" : "")"
+                               name="fullName" placeholder="Họ và tên (*)" value="@ViewBag.FullName" autofocus>
+                        <div class="input-group-text">
+                            <span class="bi bi-person"></span>
+                        </div>
+                    </div>
+                    @Html.ValidationMessage("FullName", new { @class = "text-danger small d-block mb-2" })
+
+                    @* Email *@
+                    <div class="input-group mb-1">
+                        <input type="text" class="form-control @(ViewData.ModelState.ContainsKey("Email") && ViewData.ModelState["Email"].Errors.Count > 0 ? "is-invalid" : "")"
+                               name="email" placeholder="Email (*)" value="@ViewBag.Email">
+                        <div class="input-group-text">
+                            <span class="bi bi-envelope"></span>
+                        </div>
+                    </div>
+                    @Html.ValidationMessage("Email", new { @class = "text-danger small d-block mb-2" })
+
+                    @* Số điện thoại *@
+                    <div class="input-group mb-1">
+                        <input type="text" class="form-control"
+                               name="phone" placeholder="Số điện thoại" value="@ViewBag.Phone">
+                        <div class="input-group-text">
+                            <span class="bi bi-telephone"></span>
+                        </div>
+                    </div>
+                    <div class="mb-2"></div>
+
+
+                    @* Mật khẩu *@
+                    <div class="input-group mb-1">
+                        <input type="password" class="form-control @(ViewData.ModelState.ContainsKey("Password") && ViewData.ModelState["Password"].Errors.Count > 0 ? "is-invalid" : "")"
+                               name="password" placeholder="Mật khẩu (*)" autocomplete="new-password">
+                        <div class="input-group-text">
+                            <span class="bi bi-lock-fill"></span>
+                        </div>
+                    </div>
+                    @Html.ValidationMessage("Password", new { @class = "text-danger small d-block mb-2" })
+
+                    @* Xác nhận mật khẩu *@
+                    <div class="input-group mb-1">
+                        <input type="password" class="form-control @(ViewData.ModelState.ContainsKey("ConfirmPassword") && ViewData.ModelState["ConfirmPassword"].Errors.Count > 0 ? "is-invalid" : "")"
+                               name="confirmPassword" placeholder="Xác nhận mật khẩu (*)" autocomplete="new-password">
+                        <div class="input-group-text">
+                            <span class="bi bi-lock"></span>
+                        </div>
+                    </div>
+                    @Html.ValidationMessage("ConfirmPassword", new { @class = "text-danger small d-block mb-2" })
+
+                    @* Lỗi chung *@
+                    @Html.ValidationMessage("Error", new { @class = "text-danger d-block mb-2" })
+
+                    <div class="row">
+                        <div class="col-8">
+                            <p class="text-muted small mb-0">(*) là trường bắt buộc</p>
+                        </div>
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-primary d-grid w-100">Đăng ký</button>
+                        </div>
+                    </div>
+                </form>
+
+                <p class="mb-0 mt-3">
+                    <a href="@Url.Action("Login", "Account")">Đã có tài khoản? Đăng nhập</a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="~/lib/bootstrap/bootstrap.bundle.min.js"></script>
+    <script type="module" src="~/lib/adminlte/js/adminlte.js"></script>
+</body>
+</html>

@@ -1,0 +1,209 @@
+@model List<SV22T1020796.Models.Sales.OrderDetailViewInfo>
+@{
+    ViewData["Title"] = "Thanh toán";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <h4 class="fw-bold mb-4">Thông tin giao hàng</h4>
+                <form id="formCheckout" novalidate>
+                    @{
+                        var customer = ViewBag.Customer as SV22T1020796.Models.Partner.Customer;
+                    }
+                    <div class="row g-3 text-start">
+                        <div class="col-md-12">
+                            <label class="form-label text-muted small fw-bold">Họ và tên người nhận</label>
+                            <input type="text" class="form-control py-3 border-light bg-light" name="customerName" value="@customer?.CustomerName" required placeholder="Nhập tên người nhận...">
+                            <span class="text-danger small error-msg" id="error-customerName"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">Số điện thoại</label>
+                            <input type="tel" class="form-control py-3 border-light bg-light" name="phone" value="@customer?.Phone" required placeholder="Nhập số điện thoại...">
+                            <span class="text-danger small error-msg" id="error-phone"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label text-muted small fw-bold">Email</label>
+                            <input type="email" class="form-control py-3 border-light bg-light" name="email" value="@customer?.Email" required placeholder="Địa chỉ email...">
+                            <span class="text-danger small error-msg" id="error-email"></span>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label text-muted small fw-bold">Tỉnh/Thành phố</label>
+                            <select class="form-select py-3 border-light bg-light" name="province" required>
+                                <option value="">-- Chọn tỉnh thành --</option>
+                                @{
+                                    var provinces = await DictionaryDataService.ListProvincesAsync();
+                                }
+                                @foreach (var p in provinces)
+                                {
+                                    <option value="@p.ProvinceName" selected="@(customer?.Province == p.ProvinceName)">@p.ProvinceName</option>
+                                }
+                            </select>
+                            <span class="text-danger small error-msg" id="error-province"></span>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="form-label text-muted small fw-bold">Địa chỉ chi tiết</label>
+                            <textarea class="form-control py-3 border-light bg-light" name="address" rows="3" required placeholder="Nhập số nhà, tên đường, phường/xã...">@customer?.Address</textarea>
+                            <span class="text-danger small error-msg" id="error-address"></span>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <h4 class="fw-bold mb-4">Phương thức thanh toán</h4>
+                <div class="border rounded-3 p-3 mb-3 d-flex align-items-center bg-light">
+                    <input type="radio" checked name="paymentMethod" class="form-check-input me-3">
+                    <div class="me-auto">
+                        <h6 class="mb-0 fw-bold">Thanh toán khi nhận hàng (COD)</h6>
+                        <small class="text-muted">Thanh toán bằng tiền mặt khi giao hàng tận nơi</small>
+                    </div>
+                    <i class="fa-solid fa-money-bill-wave text-success fs-4"></i>
+                </div>
+                <div class="border rounded-3 p-3 d-flex align-items-center opacity-50">
+                    <input type="radio" disabled name="paymentMethod" class="form-check-input me-3">
+                    <div class="me-auto">
+                        <h6 class="mb-0 fw-bold">Chuyển khoản / Ví điện tử (Đang bảo trì)</h6>
+                        <small class="text-muted">MoMo, ZaloPay, VNPay...</small>
+                    </div>
+                    <i class="fa-solid fa-credit-card text-muted fs-4"></i>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="top: 100px;">
+                <h5 class="fw-bold mb-4">Đơn hàng của bạn</h5>
+                <div class="mb-4 overflow-auto" style="max-height: 300px;">
+                    @foreach (var item in Model)
+                    {
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="position-relative">
+                                <img src="http://localhost:5036/images/products/@(string.IsNullOrEmpty(item.Photo) ? "nophoto.png" : item.Photo)" 
+                                     class="rounded-3 border" style="width: 50px; height: 50px; object-fit: cover;"
+                                     onerror="this.src='/images/products/nophoto.png'">
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary" style="font-size: 0.6rem;">
+                                    @item.Quantity
+                                </span>
+                            </div>
+                            <div class="ms-3 flex-grow-1">
+                                <h6 class="mb-0 small fw-bold">@item.ProductName</h6>
+                                <small class="text-muted">@item.SalePrice.ToString("N0") đ</small>
+                            </div>
+                            <div class="fw-bold small text-end">
+                                @((item.SalePrice * item.Quantity).ToString("N0")) đ
+                            </div>
+                        </div>
+                    }
+                </div>
+                <hr class="mb-4">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Tạm tính</span>
+                    <span class="fw-bold">@Model.Sum(i => i.SalePrice * i.Quantity).ToString("N0") đ</span>
+                </div>
+                <div class="d-flex justify-content-between mb-4">
+                    <span class="text-muted small">Phí vận chuyển</span>
+                    <span class="text-muted small font-italic fw-bold text-success">Miễn phí toàn quốc</span>
+                </div>
+                <div class="d-flex justify-content-between mb-5">
+                    <h5 class="fw-bold">Tổng thanh toán</h5>
+                    <h5 class="fw-bold text-primary">@Model.Sum(i => i.SalePrice * i.Quantity).ToString("N0") đ</h5>
+                </div>
+                <button type="button" onclick="placeOrder()" class="btn btn-primary w-100 py-3 rounded-3 fw-bold shadow-lg fs-5">Xác nhận đặt hàng</button>
+                <div class="text-center mt-3">
+                    <a href="~/Cart" class="text-decoration-none small text-muted"><i class="fa-solid fa-chevron-left me-1"></i>Thay đổi giỏ hàng</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function placeOrder() {
+            var form = $('#formCheckout');
+            $('.error-msg').text(''); // Xóa các thông báo lỗi cũ
+            $('.form-control, .form-select').removeClass('is-invalid border-danger');
+
+            var isValid = true;
+            
+            // Validate Họ tên
+            if (!$('input[name="customerName"]').val() || !$('input[name="customerName"]').val().trim()) {
+                $('#error-customerName').text('Vui lòng nhập họ tên người nhận');
+                $('input[name="customerName"]').addClass('is-invalid border-danger');
+                isValid = false;
+            }
+
+            // Validate Số điện thoại
+            var phone = $('input[name="phone"]').val() ? $('input[name="phone"]').val().trim() : "";
+            if (!phone) {
+                $('#error-phone').text('Vui lòng nhập số điện thoại');
+                $('input[name="phone"]').addClass('is-invalid border-danger');
+                isValid = false;
+            } else if (!/^\d{10,11}$/.test(phone)) {
+                $('#error-phone').text('Số điện thoại không hợp lệ (10-11 số)');
+                $('input[name="phone"]').addClass('is-invalid border-danger');
+                isValid = false;
+            }
+
+            // Validate Email
+            var email = $('input[name="email"]').val() ? $('input[name="email"]').val().trim() : "";
+            if (!email) {
+                $('#error-email').text('Vui lòng nhập email');
+                $('input[name="email"]').addClass('is-invalid border-danger');
+                isValid = false;
+            } else if (!/^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/.test(email)) {
+                $('#error-email').text('Email không đúng định dạng');
+                $('input[name="email"]').addClass('is-invalid border-danger');
+                isValid = false;
+            }
+
+            // Validate Tỉnh thành
+            if (!$('select[name="province"]').val()) {
+                $('#error-province').text('Vui lòng chọn Tỉnh/Thành phố');
+                $('select[name="province"]').addClass('is-invalid border-danger');
+                isValid = false;
+            }
+
+            // Validate Địa chỉ
+            if (!$('textarea[name="address"]').val() || !$('textarea[name="address"]').val().trim()) {
+                $('#error-address').text('Vui lòng nhập địa chỉ chi tiết');
+                $('textarea[name="address"]').addClass('is-invalid border-danger');
+                isValid = false;
+            }
+
+            if (isValid) {
+                var data = form.serialize();
+                $.ajax({
+                    url: '/Order/PlaceOrder',
+                    type: 'POST',
+                    data: data,
+                    success: function (response) {
+                        if (response.success) {
+                            window.location.href = '/Order/Details/' + response.orderID + '?isSuccess=true';
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Lỗi đặt hàng',
+                                text: response.message,
+                                confirmButtonColor: '#3b82f6'
+                            });
+                        }
+                    },
+                    error: function() {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Lỗi',
+                            text: "Đã xảy ra lỗi trong quá trình đặt hàng. Vui lòng thử lại.",
+                            confirmButtonColor: '#ef4444'
+                        });
+                    }
+                });
+            } else {
+                // Cuộn lên đầu form nếu có lỗi
+                $('html, body').animate({
+                    scrollTop: form.offset().top - 100
+                }, 500);
+            }
+        }
+    </script>
+}

@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Catalog - Copy\**" />
+    <Compile Remove="Common - Copy\**" />
+    <Compile Remove="DataDictionary - Copy\**" />
+    <Compile Remove="HR - Copy\**" />
+    <Compile Remove="Partner - Copy\**" />
+    <Compile Remove="Sales - Copy\**" />
+    <Compile Remove="Security - Copy\**" />
+    <EmbeddedResource Remove="Catalog - Copy\**" />
+    <EmbeddedResource Remove="Common - Copy\**" />
+    <EmbeddedResource Remove="DataDictionary - Copy\**" />
+    <EmbeddedResource Remove="HR - Copy\**" />
+    <EmbeddedResource Remove="Partner - Copy\**" />
+    <EmbeddedResource Remove="Sales - Copy\**" />
+    <EmbeddedResource Remove="Security - Copy\**" />
+    <None Remove="Catalog - Copy\**" />
+    <None Remove="Common - Copy\**" />
+    <None Remove="DataDictionary - Copy\**" />
+    <None Remove="HR - Copy\**" />
+    <None Remove="Partner - Copy\**" />
+    <None Remove="Sales - Copy\**" />
+    <None Remove="Security - Copy\**" />
+  </ItemGroup>
+
+</Project>

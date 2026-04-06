@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - NHV Shop</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg border-bottom sticky-top">
+            <div class="container">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                    <i class="fa-solid fa-bolt me-2"></i>NHV Shop
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+                        aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Product" asp-action="Index">Sản phẩm</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="categoryDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                Danh mục
+                            </a>
+                            <ul class="dropdown-menu shadow-sm border-0 mt-2" aria-labelledby="categoryDropdown">
+                                <li><a class="dropdown-item fw-bold text-primary" href="~/Product/Index"><i class="fa-solid fa-list-ul me-2 pt-1 opacity-75"></i>Tất cả danh mục</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                @foreach (var cat in (await SV22T1020796.BusinessLayers.CatalogDataService.ListCategoriesAsync(new SV22T1020796.Models.Common.PaginationSearchInput() { Page = 1, PageSize = 100, SearchValue = "" })).DataItems)
+                                {
+                                    <li><a class="dropdown-item py-2" href="~/Product/Index?categoryID=@cat.CategoryID">@cat.CategoryName</a></li>
+                                }
+                            </ul>
+                        </li>
+                    </ul>
+                    <div class="d-flex align-items-center">
+                        <form class="d-flex me-3" action="/Product/Index">
+                            <div class="input-group">
+                                <span class="input-group-text border-0 bg-transparent pe-0">
+                                    <i class="fa-solid fa-magnifying-glass text-muted"></i>
+                                </span>
+                                <input class="form-control border-0 bg-transparent focus-none" type="search" placeholder="Tìm sản phẩm..." name="searchValue">
+                            </div>
+                        </form>
+                        <a href="~/Cart" class="position-relative me-3 nav-link p-0 text-dark">
+                            <i class="fa-solid fa-cart-shopping fs-5"></i>
+                            <span class="badge cart-badge">0</span>
+                        </a>
+                        <div class="dropdown">
+                            <a href="#" class="nav-link dropdown-toggle p-0 text-dark" data-bs-toggle="dropdown">
+                                <i class="fa-regular fa-user fs-5"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end border-0 shadow-lg mt-3">
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <li><div class="dropdown-item-text fw-bold text-primary">Chào, @User.Identity.Name</div></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="~/Account/Profile"><i class="fa-solid fa-user-circle me-2 opacity-50"></i>Thông tin cá nhân</a></li>
+                                    <li><a class="dropdown-item" href="~/Order"><i class="fa-solid fa-history me-2 opacity-50"></i>Đơn hàng của tôi</a></li>
+                                    <li><a class="dropdown-item" href="~/Account/Logout"><i class="fa-solid fa-sign-out-alt me-2 opacity-50"></i>Đăng xuất</a></li>
+                                }
+                                else
+                                {
+                                    <li><a class="dropdown-item" href="~/Account/Login">Đăng nhập</a></li>
+                                    <li><a class="dropdown-item" href="~/Account/Register">Đăng ký</a></li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+
+    <footer class="footer bg-white border-top py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <h5 class="fw-bold mb-3">NHV Shop</h5>
+                    <p class="text-muted">Cửa hàng cung cấp các sản phẩm công nghệ hàng đầu với chất lượng và dịch vụ tốt nhất.</p>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h6 class="fw-bold mb-3">Về chúng tôi</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-muted text-decoration-none">Giới thiệu</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">Tuyển dụng</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-2 mb-4">
+                    <h6 class="fw-bold mb-3">Hỗ trợ</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="#" class="text-muted text-decoration-none">Chính sách bảo mật</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">Điều khoản dịch vụ</a></li>
+                        <li><a href="#" class="text-muted text-decoration-none">Trung tâm trợ giúp</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <h6 class="fw-bold mb-3">Đăng ký nhận tin</h6>
+                    <form class="input-group">
+                        <input type="email" class="form-control" placeholder="Email của bạn">
+                        <button class="btn btn-primary" type="button">Gửi</button>
+                    </form>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <span class="text-muted small">&copy; 2026 - NHV Shop. All rights reserved.</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

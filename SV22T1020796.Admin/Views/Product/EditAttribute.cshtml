@@ -1,0 +1,75 @@
+@model SV22T1020796.Models.Catalog.ProductAttribute
+@{
+    bool isCreate = (Model?.AttributeID == 0);
+}
+@section PageToolBar {
+    <button type="submit" form="formAttribute" class="btn btn-primary">
+        <i class="bi bi-save"></i>
+        Lưu
+    </button>
+    <a href="~/Product/Edit/@Model?.ProductID" class="btn btn-secondary ms-1">
+        <i class="bi bi-arrow-left"></i>
+        Quay lại
+    </a>
+}
+
+<div class="row justify-content-center">
+    <div class="col-12">
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-list-check me-2"></i>
+                    @ViewBag.Title
+                    @if (ViewBag.ProductName != null)
+                    {
+                        <small class="text-muted">- @ViewBag.ProductName</small>
+                    }
+                </h5>
+            </div>
+
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-circle me-1"></i>
+                        <strong>Vui lòng kiểm tra lại:</strong>
+                        <ul class="mb-0 mt-1">
+                            @foreach (var state in ViewData.ModelState)
+                            {
+                                @foreach (var error in state.Value.Errors)
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                }
+
+                <form id="formAttribute" action="~/Product/SaveAttribute" method="post">
+                    <input type="hidden" name="AttributeID" value="@Model?.AttributeID" />
+                    <input type="hidden" name="ProductID" value="@Model?.ProductID" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Tên thuộc tính</label>
+                        <input type="text" name="AttributeName" class="form-control"
+                               value="@Model?.AttributeName"
+                               placeholder="VD: Màu sắc, Kích thước, Chất liệu..." autofocus required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Giá trị</label>
+                        <input type="text" name="AttributeValue" class="form-control"
+                               value="@Model?.AttributeValue"
+                               placeholder="VD: Đỏ, XL, Cotton..." required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Thứ tự hiển thị</label>
+                        <input type="number" name="DisplayOrder" class="form-control"
+                               value="@Model?.DisplayOrder" min="0" style="max-width:120px;" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

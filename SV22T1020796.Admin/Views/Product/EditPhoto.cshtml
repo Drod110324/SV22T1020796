@@ -1,0 +1,93 @@
+@model SV22T1020796.Models.Catalog.ProductPhoto
+@{
+    bool isCreate = (Model?.PhotoID == 0);
+    string photoSrc = !string.IsNullOrEmpty(Model?.Photo) ? $"~/images/products/{Model.Photo}" : "~/images/products/nophoto.png";
+}
+@section PageToolBar {
+    <button type="submit" form="formPhoto" class="btn btn-primary">
+        <i class="bi bi-save"></i>
+        Lưu
+    </button>
+    <a href="~/Product/Edit/@Model?.ProductID" class="btn btn-secondary ms-1">
+        <i class="bi bi-arrow-left"></i>
+        Quay lại
+    </a>
+}
+
+<div class="row justify-content-center">
+    <div class="col-12">
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-image me-2"></i>
+                    @ViewBag.Title
+                    @if (ViewBag.ProductName != null)
+                    {
+                        <small class="text-muted">- @ViewBag.ProductName</small>
+                    }
+                </h5>
+            </div>
+
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-circle me-1"></i>
+                        <strong>Vui lòng kiểm tra lại:</strong>
+                        <ul class="mb-0 mt-1">
+                            @foreach (var state in ViewData.ModelState)
+                            {
+                                @foreach (var error in state.Value.Errors)
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                }
+
+                <form id="formPhoto" action="~/Product/SavePhoto" method="post" enctype="multipart/form-data">
+                    <input type="hidden" name="PhotoID" value="@Model?.PhotoID" />
+                    <input type="hidden" name="ProductID" value="@Model?.ProductID" />
+                    <input type="hidden" name="Photo" value="@Model?.Photo" />
+
+                    <div class="mb-3">
+                        <label class="form-label">Chọn ảnh</label>
+                        <input type="file" name="uploadPhoto" class="form-control" accept="image/*"
+                               onchange="document.getElementById('imgPreview').src = window.URL.createObjectURL(this.files[0])" />
+                        <div class="mt-2">
+                            <img id="imgPreview" src="@photoSrc"
+                                 class="img-thumbnail" style="max-height: 200px;" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Mô tả ảnh</label>
+                        <input type="text" name="Description" class="form-control"
+                               value="@Model?.Description"
+                               placeholder="Mô tả ngắn cho ảnh..." required />
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Thứ tự hiển thị</label>
+                            <input type="number" name="DisplayOrder" class="form-control"
+                                   value="@Model?.DisplayOrder" min="0" style="max-width:120px;" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Trạng thái</label>
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input" type="checkbox"
+                                       name="IsHidden" value="true" id="IsHidden"
+                                       @(Model?.IsHidden == true ? "checked" : "") />
+                                <label class="form-check-label" for="IsHidden">
+                                    Ẩn ảnh này
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

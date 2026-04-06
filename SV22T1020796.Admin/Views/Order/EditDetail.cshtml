@@ -1,0 +1,67 @@
+@model SV22T1020796.Models.Sales.OrderDetailViewInfo
+@{
+    Layout = null;
+}
+<div class="modal-dialog">
+    <div class="modal-content">
+        <form action="~/Order/UpdateDetail" method="post" class="form-ajax">
+            <input type="hidden" name="OrderID" value="@Model.OrderID" />
+            <input type="hidden" name="ProductID" value="@Model.ProductID" />
+            
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Cập nhật mặt hàng trong đơn hàng</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tên mặt hàng:</label>
+                    <p class="form-control-static">@Model.ProductName</p>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Đơn vị tính:</label>
+                    <p class="form-control-static">@Model.Unit</p>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Số lượng:</label>
+                        <input type="number" name="Quantity" class="form-control" value="@Model.Quantity" min="1" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold">Giá bán:</label>
+                        <input type="text" name="SalePrice" class="form-control" value="@Model.SalePrice.ToString("N0")" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save me-1"></i> Lưu thay đổi
+                </button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.form-ajax').submit(function (e) {
+            e.preventDefault();
+            var url = $(this).attr("action");
+            var method = $(this).attr("method");
+            var data = $(this).serialize();
+            
+            $.ajax({
+                url: url,
+                type: method,
+                data: data,
+                success: function (result) {
+                    if (result !== "") {
+                        alert(result);
+                    } else {
+                        location.reload();
+                    }
+                }
+            });
+        });
+    });
+</script>

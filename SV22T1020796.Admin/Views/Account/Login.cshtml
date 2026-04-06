@@ -1,0 +1,67 @@
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>LiteCommerce | Log in</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/bootstrap-icons.min.css" />
+    <link rel="stylesheet" href="~/lib/adminlte/css/adminlte.css" />
+</head>
+<body class="login-page bg-body-secondary">
+    <div class="login-box">
+        <div class="login-logo">
+            <a href="#"><b>Lite</b>Commerce</a>
+        </div>
+        <div class="card card-outline card-primary">
+            <div class="card-body login-card-body">
+                <p class="login-box-msg">Đăng nhập hệ thống</p>
+
+
+
+                <form action="~/Account/Login" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" name="userName" placeholder="Tên đăng nhập" value="@ViewBag.Username" autofocus>
+                        <div class="input-group-text">
+                            <span class="bi bi-person"></span>
+                        </div>
+                    </div>
+                    <div class="input-group mb-3">
+                        <input type="password" class="form-control" name="password" placeholder="Mật khẩu">
+                        <div class="input-group-text">
+                            <span class="bi bi-lock-fill"></span>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-8">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="remember">
+                                <label class="form-check-label" for="remember">
+                                    Ghi nhớ
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <button type="submit" class="btn btn-primary d-grid w-100">Đăng nhập</button>
+                        </div>
+                    </div>
+                    @Html.ValidationMessage("Error", new { @class = "text-danger mt-2 d-block" })
+                </form>
+
+                <p class="mb-1 mt-3">
+                    <a href="#">Quên mật khẩu</a>
+                </p>
+
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="~/lib/bootstrap/bootstrap.bundle.min.js"></script>
+    <script type="module" src="~/lib/adminlte/js/adminlte.js"></script>
+</body>
+</html>

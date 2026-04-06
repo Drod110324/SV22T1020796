@@ -1,0 +1,76 @@
+@model List<SV22T1020796.Models.Sales.OrderViewInfo>
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h2 class="fw-bold mb-0">Đơn hàng của tôi</h2>
+            <p class="text-muted">Theo dõi và quản lý các đơn hàng bạn đã đặt.</p>
+        </div>
+        <a href="~/Home/Index" class="btn btn-outline-primary rounded-3 px-4">
+            <i class="fa-solid fa-cart-shopping me-2"></i>Tiếp tục mua sắm
+        </a>
+    </div>
+
+    @if (Model == null || Model.Count == 0)
+    {
+        <div class="text-center py-5 bg-white rounded-4 shadow-sm">
+            <div class="mb-4">
+                <i class="fa-solid fa-box-open fs-1 text-muted opacity-25"></i>
+            </div>
+            <h4 class="text-muted">Bạn chưa có đơn hàng nào</h4>
+            <p class="text-muted mb-4">Hãy bắt đầu mua sắm để nhận được nhiều ưu đãi nhất.</p>
+            <a href="~/Home/Index" class="btn btn-primary rounded-3 px-5">Mua sắm ngay</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive bg-white rounded-4 shadow-sm p-4">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="border-0 py-3">Mã đơn hàng</th>
+                        <th class="border-0 py-3">Ngày đặt</th>
+                        <th class="border-0 py-3">Nơi giao</th>
+                        <th class="border-0 py-3">Trạng thái</th>
+                        <th class="border-0 py-3 text-end">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderByDescending(o => o.OrderTime))
+                    {
+                        <tr>
+                            <td class="py-3">
+                                <span class="fw-bold text-dark">#@item.OrderID</span>
+                            </td>
+                            <td class="py-3">@item.OrderTime.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td class="py-3">@item.DeliveryProvince</td>
+                            <td class="py-3">
+                                @{
+                                    string badgeClass = item.Status switch
+                                    {
+                                        SV22T1020796.Models.Sales.OrderStatusEnum.New => "bg-info bg-opacity-10 text-info",
+                                        SV22T1020796.Models.Sales.OrderStatusEnum.Accepted => "bg-primary bg-opacity-10 text-primary",
+                                        SV22T1020796.Models.Sales.OrderStatusEnum.Shipping => "bg-warning bg-opacity-10 text-warning",
+                                        SV22T1020796.Models.Sales.OrderStatusEnum.Completed => "bg-success bg-opacity-10 text-success",
+                                        _ => "bg-danger bg-opacity-10 text-danger"
+                                    };
+                                }
+                                <span class="badge @badgeClass px-3 py-2 rounded-3">
+                                    @item.Status.GetDescription()
+                                </span>
+                            </td>
+                            <td class="py-3 text-end">
+                                <a href="~/Order/Details/@item.OrderID" class="btn btn-light btn-sm rounded-3 px-3">
+                                    Chi tiết <i class="fa-solid fa-chevron-right ms-1 small"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

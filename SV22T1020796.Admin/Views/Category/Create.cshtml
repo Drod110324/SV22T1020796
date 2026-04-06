@@ -1,0 +1,68 @@
+@model SV22T1020796.Models.Catalog.Category
+@{
+    ViewBag.Title = "Thêm loại hàng";
+}
+@section PageToolBar {
+    <button type="submit" form="formCreate" class="btn btn-primary">
+        <i class="bi bi-save"></i>
+        Lưu dữ liệu
+    </button>
+    <a href="~/Category" class="btn btn-secondary ms-1">
+        <i class="bi bi-arrow-left"></i>
+        Quay lại
+    </a>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="card card-primary card-outline shadow-sm">
+    <div class="card-header">
+        <h5 class="card-title mb-0 fw-bold text-primary">
+            <i class="bi bi-tags me-2"></i>
+            Thiết lập loại hàng
+        </h5>
+    </div>
+
+    <div class="card-body">
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="alert alert-danger">
+                <i class="bi bi-exclamation-circle me-1"></i>
+                <strong>Vui lòng kiểm tra lại dữ liệu:</strong>
+                <ul class="mb-0 mt-1">
+                    @foreach (var state in ViewData.ModelState)
+                    {
+                        @foreach (var error in state.Value.Errors)
+                        {
+                            <li>@error.ErrorMessage</li>
+                        }
+                    }
+                </ul>
+            </div>
+        }
+
+        <form id="formCreate" action="~/Category/Save" method="post">
+            <input type="hidden" name="CategoryID" value="@Model?.CategoryID" />
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Tên loại hàng:</label>
+                <input type="text" class="form-control" name="CategoryName"
+                       value="@Model?.CategoryName"
+                       placeholder="VD: Đồ uống, Thực phẩm..." autofocus required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold">Mô tả:</label>
+                <textarea class="form-control" name="Description" rows="3"
+                          placeholder="Mô tả loại hàng...">@Model?.Description</textarea>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,131 @@
+@model SV22T1020796.Models.Partner.Customer
+@{
+    ViewBag.Title = "Chỉnh sửa khách hàng";
+}
+@section PageToolBar {
+    <button type="submit" form="formEdit" class="btn btn-primary">
+        <i class="bi bi-save"></i>
+        Lưu dữ liệu
+    </button>    
+    <a href="~/Customer" class="btn btn-secondary ms-1">
+        <i class="bi bi-arrow-left"></i>
+        Quay lại
+    </a>
+}
+
+@if (TempData["ErrorMessage"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-triangle me-1"></i>
+        @TempData["ErrorMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row justify-content-center">
+    <div class="col-12">
+        <div class="card card-primary card-outline">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-people me-2"></i>
+                    Thông tin khách hàng
+                </h5>
+            </div>
+
+            <div class="card-body">
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger">
+                        <i class="bi bi-exclamation-circle me-1"></i>
+                        <strong>Vui lòng kiểm tra lại dữ liệu:</strong>
+                        <ul class="mb-0 mt-1">
+                            @foreach (var state in ViewData.ModelState)
+                            {
+                                @foreach (var error in state.Value.Errors)
+                                {
+                                    <li>@error.ErrorMessage</li>
+                                }
+                            }
+                        </ul>
+                    </div>
+                }
+
+                <form id="formEdit" action="~/Customer/Save" method="post">
+                    <input type="hidden" name="CustomerID" value="@Model?.CustomerID" />
+
+                    <div class="row align-items-end">
+                        <div class="col-md-5 mb-3">
+                            <label class="form-label">Tên khách hàng</label>
+                            <input type="text"
+                                   name="CustomerName"
+                                   class="form-control"
+                                   value="@Model?.CustomerName"
+                                   placeholder="Nhập tên khách hàng" autofocus required />
+                        </div>
+                        <div class="col-md-5 mb-3">
+                            <label class="form-label">Tên giao dịch</label>
+                            <input type="text"
+                                   name="ContactName"
+                                   class="form-control"
+                                   value="@Model?.ContactName"
+                                   placeholder="Nhập tên giao dịch" />
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <label class="form-label d-block">Trạng thái</label>
+                            <div class="form-check form-switch mt-2">
+                                <input class="form-check-input"
+                                       type="checkbox"
+                                       name="IsLocked"
+                                       value="true"
+                                       id="IsLocked"
+                                       @(Model?.IsLocked == true ? "checked" : "") />
+                                <label class="form-check-label" for="IsLocked">
+                                    Tài khoản bị khoá
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-5 mb-3">
+                            <label class="form-label">Điện thoại</label>
+                            <input type="tel"
+                                   name="Phone"
+                                   class="form-control"
+                                   value="@Model?.Phone"
+                                   placeholder="Nhập số điện thoại" />
+                        </div>
+
+                        <div class="col-md-7 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email"
+                                   name="Email"
+                                   class="form-control"
+                                   value="@Model?.Email"
+                                   placeholder="Nhập email" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Địa chỉ</label>
+                        <textarea class="form-control"
+                                  name="Address"
+                                  rows="3"
+                                  placeholder="Nhập địa chỉ">@Model?.Address</textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Tỉnh / Thành</label>
+                        <select class="form-select" name="Province">
+                            <option value="">-- Chọn tỉnh / thành --</option>
+                            <option value="Hà Nội" selected="@(Model?.Province == "Hà Nội")">Hà Nội</option>
+                            <option value="TP. Hồ Chí Minh" selected="@(Model?.Province == "TP. Hồ Chí Minh")">TP. Hồ Chí Minh</option>
+                            <option value="Đà Nẵng" selected="@(Model?.Province == "Đà Nẵng")">Đà Nẵng</option>
+                            <option value="Cần Thơ" selected="@(Model?.Province == "Cần Thơ")">Cần Thơ</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

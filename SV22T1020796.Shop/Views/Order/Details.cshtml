@@ -1,0 +1,135 @@
+@model SV22T1020796.Models.Sales.OrderViewInfo
+@{
+    bool isNewOrder = ViewBag.IsNewOrder ?? false;
+    ViewData["Title"] = isNewOrder ? "Đặt hàng thành công" : "Chi tiết đơn hàng #" + Model.OrderID;
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <nav aria-label="breadcrumb" class="mb-4">
+                <ol class="breadcrumb bg-transparent p-0">
+                    <li class="breadcrumb-item"><a href="~/Home/Index" class="text-decoration-none text-muted">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="~/Order" class="text-decoration-none text-muted">Đơn hàng</a></li>
+                    <li class="breadcrumb-item active fw-bold text-dark" aria-current="page">Chi tiết #@Model.OrderID</li>
+                </ol>
+            </nav>
+
+            @if (isNewOrder)
+            {
+                <div class="text-center mb-5">
+                    <i class="fa-solid fa-circle-check text-success display-1 mb-4 animate__animated animate__bounceIn"></i>
+                    <h2 class="fw-bold mb-3">Đặt hàng thành công!</h2>
+                    <p class="text-muted mb-0">Cảm ơn bạn đã tin tưởng và mua hàng tại NHV Shop. Mã đơn hàng của bạn là: <span class="fw-bold text-primary">#@Model.OrderID</span></p>
+                </div>
+            }
+            else
+            {
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold mb-0">Chi tiết đơn hàng #@Model.OrderID</h4>
+                    @{
+                        string badgeClass = Model.Status switch
+                        {
+                            SV22T1020796.Models.Sales.OrderStatusEnum.New => "bg-info bg-opacity-10 text-info",
+                            SV22T1020796.Models.Sales.OrderStatusEnum.Accepted => "bg-primary bg-opacity-10 text-primary",
+                            SV22T1020796.Models.Sales.OrderStatusEnum.Shipping => "bg-warning bg-opacity-10 text-warning",
+                            SV22T1020796.Models.Sales.OrderStatusEnum.Completed => "bg-success bg-opacity-10 text-success",
+                            _ => "bg-danger bg-opacity-10 text-danger"
+                        };
+                    }
+                    <span class="badge @badgeClass px-3 py-2 rounded-3 fs-6">
+                        @Model.Status.GetDescription()
+                    </span>
+                </div>
+            }
+            
+            <div class="row g-4 mb-5">
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                        <h6 class="fw-bold mb-3 d-flex align-items-center">
+                            <i class="fa-solid fa-truck text-primary me-2"></i>Thông tin vận chuyển
+                        </h6>
+                        <div class="mb-2">
+                            <label class="text-muted small d-block">Người nhận</label>
+                            <span class="fw-bold text-dark">@Model.CustomerName</span>
+                        </div>
+                        <div class="mb-2">
+                            <label class="text-muted small d-block">Số điện thoại</label>
+                            <span class="fw-bold text-dark">@Model.CustomerPhone</span>
+                        </div>
+                        <div>
+                            <label class="text-muted small d-block">Địa chỉ giao hàng</label>
+                            <span class="fw-bold text-dark">@Model.DeliveryAddress, @Model.DeliveryProvince</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                        <h6 class="fw-bold mb-3 d-flex align-items-center">
+                            <i class="fa-solid fa-file-invoice text-primary me-2"></i>Thông tin đơn hàng
+                        </h6>
+                        <div class="mb-2">
+                            <label class="text-muted small d-block">Ngày đặt hàng</label>
+                            <span class="fw-bold text-dark">@Model.OrderTime.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                        <div class="mb-2">
+                            <label class="text-muted small d-block">Phương thức thanh toán</label>
+                            <span class="fw-bold text-dark">Thanh toán khi nhận hàng (COD)</span>
+                        </div>
+                        <div>
+                            <label class="text-muted small d-block">Mã số tài khoản</label>
+                            <span class="fw-bold text-dark">@Model.CustomerID</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="border-0 px-4 py-3">Sản phẩm</th>
+                                <th class="border-0 py-3 text-center">Số lượng</th>
+                                <th class="border-0 px-4 py-3 text-end">Thành tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var details = await SalesDataService.ListDetailsAsync(Model.OrderID);
+                                foreach(var item in details)
+                                {
+                                    <tr>
+                                        <td class="px-4 py-3">
+                                            <div class="d-flex align-items-center">
+                                                <img src="http://localhost:5036/images/products/@(string.IsNullOrEmpty(item.Photo) ? "nophoto.png" : item.Photo)" 
+                                                     class="rounded-3 border me-3" style="width: 45px; height: 45px; object-fit: cover;"
+                                                     onerror="this.src='/images/products/nophoto.png'">
+                                                <span class="fw-semibold small">@item.ProductName</span>
+                                            </div>
+                                        </td>
+                                        <td class="py-3 text-center fw-bold">@item.Quantity</td>
+                                        <td class="px-4 py-3 text-end fw-bold text-primary">@((item.SalePrice * item.Quantity).ToString("N0")) đ</td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                        <tfoot class="bg-light bg-opacity-50">
+                            <tr>
+                                <td colspan="2" class="px-4 py-3 text-end fw-bold">Tổng thanh toán</td>
+                                <th class="px-4 py-3 text-end text-primary h4 mb-0">@Model.TotalValue.ToString("N0") đ</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="d-flex gap-3 justify-content-center pt-3">
+                <a href="~/Home/Index" class="btn btn-primary px-5 py-3 rounded-3 fw-bold shadow">Tiếp tục mua sắm</a>
+                <a href="~/Order" class="btn btn-outline-secondary px-5 py-3 rounded-3 fw-bold">Trở về lịch sử đơn hàng</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />

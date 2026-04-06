@@ -1,0 +1,215 @@
+@model SV22T1020796.Models.Catalog.Product
+@{
+    ViewData["Title"] = Model.ProductName;
+}
+
+<div class="container py-5">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-5">
+        <ol class="breadcrumb bg-transparent p-0">
+            <li class="breadcrumb-item"><a href="~/Home/Index" class="text-decoration-none text-muted">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a href="~/Home/Index?categoryID=@Model.CategoryID" class="text-decoration-none text-muted">Sản phẩm</a></li>
+            <li class="breadcrumb-item active fw-bold text-dark" aria-current="page">@Model.ProductName</li>
+        </ol>
+    </nav>
+
+    <div class="row g-5">
+        <!-- Product Images -->
+        <div class="col-lg-6">
+            <div class="sticky-top" style="top: 100px;">
+                <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3">
+                    <img id="mainImage" src="http://localhost:5036/images/products/@(string.IsNullOrEmpty(Model.Photo) ? "nophoto.png" : Model.Photo)" 
+                         class="img-fluid w-100" style="object-fit: contain; min-height: 400px; max-height: 600px;"
+                         onerror="this.src='/images/products/nophoto.png'">
+                </div>
+                
+                @{
+                    var photos = ViewBag.Photos as List<SV22T1020796.Models.Catalog.ProductPhoto>;
+                    if (photos != null && photos.Count > 0)
+                    {
+                        <div class="row g-2">
+                             <div class="col-3">
+                                <div class="card border-1 border-primary rounded-3 overflow-hidden cursor-pointer" onclick="changeImage('http://localhost:5036/images/products/@(string.IsNullOrEmpty(Model.Photo) ? "nophoto.png" : Model.Photo)')">
+                                    <img src="http://localhost:5036/images/products/@(string.IsNullOrEmpty(Model.Photo) ? "nophoto.png" : Model.Photo)" class="img-fluid" onerror="this.src='/images/products/nophoto.png'">
+                                </div>
+                            </div>
+                            @foreach (var photo in photos)
+                            {
+                                <div class="col-3">
+                                    <div class="card border-0 rounded-3 overflow-hidden cursor-pointer" onclick="changeImage('http://localhost:5036/images/products/@photo.Photo')">
+                                        <img src="http://localhost:5036/images/products/@photo.Photo" class="img-fluid" onerror="this.src='/images/products/nophoto.png'">
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+
+        <!-- Product Info -->
+        <div class="col-lg-6">
+            <div class="ps-lg-4">
+                <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill mb-3">Hàng mới về</span>
+                <h1 class="fw-bold display-6 mb-3">@Model.ProductName</h1>
+                
+                <h2 class="fw-bold text-primary mb-4">@Model.Price.ToString("N0") đ</h2>
+                
+                <div class="mb-4">
+                    <h6 class="fw-bold mb-3">Mô tả sản phẩm</h6>
+                    <p class="text-muted leading-relaxed">@Model.ProductDescription</p>
+                </div>
+                
+                @{
+                    var attrs = ViewBag.Attributes as List<SV22T1020796.Models.Catalog.ProductAttribute>;
+                    if(attrs != null && attrs.Count > 0)
+                    {
+                        <div class="mb-5">
+                            <h6 class="fw-bold mb-3">Thông số kỹ thuật</h6>
+                            <table class="table table-sm table-borderless">
+                                <tbody>
+                                    @foreach(var attr in attrs)
+                                    {
+                                        <tr>
+                                            <td class="text-muted small py-2" style="width: 150px;">@attr.AttributeName</td>
+                                            <td class="fw-semibold small py-2">@attr.AttributeValue</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                }
+
+                <div class="d-flex gap-3 mb-5">
+                    <div class="quantity-picker border rounded-3 d-flex align-items-center bg-light">
+                        <button class="btn border-0 py-3 px-4" onclick="adjustQty(-1)">-</button>
+                        <input type="number" id="qtyInput" value="1" min="1" class="form-control border-0 bg-transparent text-center fw-bold" style="width: 60px;">
+                        <button class="btn border-0 py-3 px-4" onclick="adjustQty(1)">+</button>
+                    </div>
+                    <button class="btn btn-outline-primary px-4 rounded-3 fw-bold" onclick="addToCart(@Model.ProductID)">
+                        <i class="fa-solid fa-cart-shopping me-2"></i>Thêm vào giỏ
+                    </button>
+                    <button class="btn btn-primary flex-grow-1 py-3 rounded-3 fw-bold shadow-lg" onclick="buyNow(@Model.ProductID)">
+                        Mua ngay
+                    </button>
+                </div>
+                
+                <div class="card bg-light border-0 rounded-4 p-4">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fa-solid fa-truck-fast text-primary fs-4 me-3"></i>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Giao hàng miễn phí</h6>
+                            <small class="text-muted">Đơn hàng trên 1.000.000 đ</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fa-solid fa-rotate-left text-primary fs-4 me-3"></i>
+                        <div>
+                            <h6 class="mb-0 fw-bold">Đổi trả trong 30 ngày</h6>
+                            <small class="text-muted">An tâm mua sắm không lo âu</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Products -->
+    @{
+        var related = ViewBag.RelatedProducts as List<SV22T1020796.Models.Catalog.Product>;
+        if(related != null && related.Count > 0)
+        {
+            <div class="mt-5 pt-5">
+                <h4 class="fw-bold mb-4">Sản phẩm liên quan</h4>
+                <div class="row g-4">
+                    @foreach(var item in related)
+                    {
+                        <div class="col-6 col-lg-3">
+                            <div class="product-card" onclick="location.href='/Product/Details/@item.ProductID'">
+                                <div class="product-image-container">
+                                    <img src="http://localhost:5036/images/products/@(string.IsNullOrEmpty(item.Photo) ? "nophoto.png" : item.Photo)" 
+                                         class="product-image" onerror="this.src='/images/products/nophoto.png'">
+                                </div>
+                                <div class="product-info">
+                                    <h6 class="product-title small mb-2">@item.ProductName</h6>
+                                    <span class="product-price small">@item.Price.ToString("N0") đ</span>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function changeImage(src) {
+            $('#mainImage').attr('src', src);
+            $('.col-3 .card').removeClass('border-primary border-1').addClass('border-0');
+            $(event.currentTarget).addClass('border-primary border-1').removeClass('border-0');
+        }
+
+        function adjustQty(delta) {
+            let input = $('#qtyInput');
+            let val = parseInt(input.val()) + delta;
+            if(val < 1) val = 1;
+            input.val(val);
+        }
+
+        function addToCart(id) {
+            let qty = $('#qtyInput').val();
+            $.ajax({
+                url: '/Cart/AddToCart',
+                type: 'POST',
+                data: { productID: id, quantity: qty },
+                success: function (response) {
+                    if (response.success) {
+                        $('.cart-badge').text(response.cartCount);
+                        const Toast = Swal.mixin({
+                            toast: true,
+                            position: 'top',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        })
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Đã thêm vào giỏ hàng thành công!'
+                        })
+                    } else {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Thông báo',
+                            text: response.message,
+                            confirmButtonColor: '#3085d6'
+                        });
+                    }
+                }
+            });
+        }
+
+        function buyNow(id) {
+            let qty = $('#qtyInput').val();
+            $.ajax({
+                url: '/Cart/AddToCart',
+                type: 'POST',
+                data: { productID: id, quantity: qty },
+                success: function (response) {
+                    if (response.success) {
+                        window.location.href = '/Order/Checkout';
+                    } else {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Thông báo',
+                            text: response.message,
+                            confirmButtonColor: '#3085d6'
+                        });
+                    }
+                }
+            });
+        }
+    </script>
+}

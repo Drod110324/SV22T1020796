@@ -1,0 +1,49 @@
+@{
+    ViewData["Title"] = "Đăng nhập";
+}
+
+<div class="container my-5 py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card border-0 shadow-lg" style="border-radius: 1.5rem;">
+                <div class="card-body p-5">
+                    <div class="text-center mb-5">
+                        <i class="fa-solid fa-user-circle fs-1 text-primary mb-3"></i>
+                        <h2 class="fw-bold">Chào mừng trở lại</h2>
+                        <p class="text-muted">Đăng nhập để xem đơn hàng và mua sắm dễ dàng hơn.</p>
+                    </div>
+
+                    @if (ViewBag.ErrorMessage != null || TempData["ErrorMessage"] != null)
+                    {
+                        <div class="alert alert-danger border-0 small mb-4" style="border-radius: 1rem;">
+                            <i class="fa-solid fa-circle-exclamation me-2"></i>@(ViewBag.ErrorMessage ?? TempData["ErrorMessage"])
+                        </div>
+                    }
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success border-0 small mb-4" style="border-radius: 1rem;">
+                            <i class="fa-solid fa-circle-check me-2"></i>@TempData["SuccessMessage"]
+                        </div>
+                    }
+
+                    <form method="post" action="/Account/Login" novalidate>
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold">Email đăng nhập</label>
+                            <input type="text" name="userName" class="form-control form-control-lg border-0 bg-light" placeholder="Nhập email của bạn..." style="border-radius: 1rem;" value="@ViewBag.UserName">
+                        </div>
+                        <div class="mb-5">
+                            <label class="form-label text-muted small fw-bold">Mật khẩu</label>
+                            <input type="password" name="password" class="form-control form-control-lg border-0 bg-light" placeholder="********" style="border-radius: 1rem;" value="@ViewBag.Password">
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100 py-3 fw-bold border-0 shadow mb-4" style="border-radius: 1rem;">Đăng nhập</button>
+                    </form>
+
+                    <div class="text-center">
+                        <span class="text-muted small">Chưa có tài khoản? </span>
+                        <a href="~/Account/Register" class="text-primary small fw-bold text-decoration-none">Đăng ký ngay</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

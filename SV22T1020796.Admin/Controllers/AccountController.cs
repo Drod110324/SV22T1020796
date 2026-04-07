@@ -127,7 +127,7 @@ namespace SV22T1020796.Admin.Controllers
             }
 
             var userData = User.GetUserData();
-            if (userData == null) return RedirectToAction("Login");
+            if (userData == null || string.IsNullOrEmpty(userData.UserName)) return RedirectToAction("Login");
 
             var userAccount = await UserAccountService.Authorize(AccountTypes.Employee, userData.UserName, oldPassword);
             if (userAccount == null)

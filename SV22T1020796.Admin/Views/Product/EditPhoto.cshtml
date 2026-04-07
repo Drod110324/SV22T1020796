@@ -1,7 +1,7 @@
 @model SV22T1020796.Models.Catalog.ProductPhoto
 @{
     bool isCreate = (Model?.PhotoID == 0);
-    string photoSrc = !string.IsNullOrEmpty(Model?.Photo) ? $"~/images/products/{Model.Photo}" : "~/images/products/nophoto.png";
+    string photoSrc = !string.IsNullOrEmpty(Model?.Photo) ? Url.Content($"~/images/products/{Model.Photo}") : Url.Content("~/images/products/nophoto.png");
 }
 @section PageToolBar {
     <button type="submit" form="formPhoto" class="btn btn-primary">

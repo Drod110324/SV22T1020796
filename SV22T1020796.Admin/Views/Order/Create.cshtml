@@ -335,13 +335,26 @@
 
         function removeFromCart(e, btn) {
             e.preventDefault();
-            const url = btn.getAttribute("href");
-            fetch(url)
-            .then(() => {
-                 showShoppingCart();
-            })
-            .catch(err => {
-                console.error("Lỗi khi xóa khỏi giỏ hàng:", err);
+            Swal.fire({
+                title: 'Xóa mặt hàng?',
+                text: "Bạn có chắc chắn muốn xóa mặt hàng này khỏi giỏ hàng?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Đồng ý xóa',
+                cancelButtonText: 'Hủy bỏ'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const url = btn.getAttribute("href");
+                    fetch(url)
+                    .then(() => {
+                         showShoppingCart();
+                    })
+                    .catch(err => {
+                        console.error("Lỗi khi xóa khỏi giỏ hàng:", err);
+                    });
+                }
             });
         }
 

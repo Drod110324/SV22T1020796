@@ -2,7 +2,7 @@
 @{
     var categories = ViewBag.Categories as SV22T1020796.Models.Common.PagedResult<SV22T1020796.Models.Catalog.Category>;
     var suppliers = ViewBag.Suppliers as SV22T1020796.Models.Common.PagedResult<SV22T1020796.Models.Partner.Supplier>;
-    string photoSrc = !string.IsNullOrEmpty(Model?.Photo) ? $"~/images/products/{Model.Photo}" : "~/images/products/nophoto.png";
+    string photoSrc = !string.IsNullOrEmpty(Model?.Photo) ? Url.Content($"~/images/products/{Model.Photo}") : Url.Content("~/images/products/nophoto.png");
     bool isCreate = (Model?.ProductID == 0);
 }
 @section PageToolBar {
@@ -207,7 +207,7 @@
                             {
                                 @foreach (var p in photos)
                                 {
-                                    string pSrc = !string.IsNullOrEmpty(p.Photo) ? $"~/images/products/{p.Photo}" : "~/images/products/nophoto.png";
+                                    string pSrc = !string.IsNullOrEmpty(p.Photo) ? Url.Content($"~/images/products/{p.Photo}") : Url.Content("~/images/products/nophoto.png");
                                     <tr>
                                         <td class="text-center">
                                             <img src="@pSrc" class="img-thumbnail" style="max-height:80px;" />
@@ -228,7 +228,7 @@
                                             <a class="btn btn-sm btn-primary" href="~/Product/EditPhoto/@Model?.ProductID?photoId=@p.PhotoID">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
-                                            <a class="btn btn-sm btn-danger" href="~/Product/DeletePhoto/@Model?.ProductID?photoId=@p.PhotoID">
+                                            <a class="btn btn-sm btn-danger btn-delete-photo" href="~/Product/DeletePhoto/@Model?.ProductID?photoId=@p.PhotoID">
                                                 <i class="bi bi-trash"></i>
                                             </a>
                                         </td>
@@ -288,7 +288,7 @@
                                             <a class="btn btn-sm btn-primary" href="~/Product/EditAttribute/@Model?.ProductID?attributeId=@a.AttributeID">
                                                 <i class="bi bi-pencil"></i>
                                             </a>
-                                            <a class="btn btn-sm btn-danger" href="~/Product/DeleteAttribute/@Model?.ProductID?attributeId=@a.AttributeID">
+                                            <a class="btn btn-sm btn-danger btn-delete-attribute" href="~/Product/DeleteAttribute/@Model?.ProductID?attributeId=@a.AttributeID">
                                                 <i class="bi bi-trash"></i>
                                             </a>
                                         </td>
@@ -305,4 +305,49 @@
             </div>
         </div>
     </div>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $(".btn-delete-photo").click(function (e) {
+                e.preventDefault();
+                let url = $(this).attr("href");
+                Swal.fire({
+                    title: 'Xác nhận xóa ảnh?',
+                    text: "Dữ liệu ảnh sẽ bị xóa vĩnh viễn khỏi hệ thống!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Đồng ý xóa',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url;
+                    }
+                });
+            });
+
+            $(".btn-delete-attribute").click(function (e) {
+                e.preventDefault();
+                let url = $(this).attr("href");
+                Swal.fire({
+                    title: 'Xác nhận xóa thuộc tính?',
+                    text: "Dữ liệu thuộc tính sẽ bị xóa vĩnh viễn khỏi hệ thống!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Đồng ý xóa',
+                    cancelButtonText: 'Hủy'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = url;
+                    }
+                });
+            });
+        });
+    </script>
+}
 }

@@ -34,8 +34,9 @@
             <div class="row g-2 mt-1">
                 <div class="col-4">
                     <div style="height: 100px; display: flex; align-items: center; justify-content: center; background: #f8f9fa;" class="border rounded">
-                        <img src="@(string.IsNullOrEmpty(item.Photo) ? Url.Content("~/images/products/no-image.png") : Url.Content($"~/images/products/{item.Photo}"))"
-                             style="max-height: 100%; max-width: 100%; object-fit: contain;" />
+                        <img src="@(string.IsNullOrEmpty(item.Photo) ? Url.Content("~/images/products/nophoto.png") : Url.Content($"~/images/products/{item.Photo}"))"
+                             style="max-height: 100%; max-width: 100%; object-fit: contain;" 
+                             onerror="this.src='@Url.Content("~/images/products/nophoto.png")'"/>
                     </div>
                 </div>
                 <div class="col-8">

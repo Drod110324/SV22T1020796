@@ -112,13 +112,22 @@ namespace SV22T1020796.Admin.Controllers
                 if (uploadPhoto != null && uploadPhoto.Length > 0)
                 {
                     string fileName = $"prod_{DateTime.Now.Ticks}{Path.GetExtension(uploadPhoto.FileName)}";
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "products", fileName);
-                    Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
+                    string filePath = Path.Combine(ApplicationContext.WWWRootPath, "images", "products", fileName);
+                    string? directoryPath = Path.GetDirectoryName(filePath);
+                    if (directoryPath != null)
+                    {
+                        Directory.CreateDirectory(directoryPath);
+                    }
+
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await uploadPhoto.CopyToAsync(stream);
                     }
                     data.Photo = fileName;
+                }
+                else if (string.IsNullOrEmpty(data.Photo))
+                {
+                    data.Photo = "nophoto.png";
                 }
 
                 if (data.ProductID == 0)
@@ -336,17 +345,22 @@ namespace SV22T1020796.Admin.Controllers
                 if (uploadPhoto != null && uploadPhoto.Length > 0)
                 {
                     string fileName = $"prodphoto_{DateTime.Now.Ticks}{Path.GetExtension(uploadPhoto.FileName)}";
-                    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "products", fileName);
-                    Directory.CreateDirectory(Path.GetDirectoryName(filePath)!);
+                    string filePath = Path.Combine(ApplicationContext.WWWRootPath, "images", "products", fileName);
+                    string? directoryPath = Path.GetDirectoryName(filePath);
+                    if (directoryPath != null)
+                    {
+                        Directory.CreateDirectory(directoryPath);
+                    }
+
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await uploadPhoto.CopyToAsync(stream);
                     }
                     data.Photo = fileName;
                 }
-                else if (data.PhotoID == 0)
+                else if (data.PhotoID == 0 && string.IsNullOrEmpty(data.Photo))
                 {
-                    ModelState.AddModelError("uploadPhoto", "Vui lòng chọn ảnh");
+                    ModelState.AddModelError("uploadPhoto", "Vui lòng chọn ảnh cho thư viện");
                 }
 
                 if (!ModelState.IsValid)

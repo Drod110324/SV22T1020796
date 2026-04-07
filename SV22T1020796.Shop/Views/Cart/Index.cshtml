@@ -58,6 +58,11 @@
                             </table>
                         </div>
                     </div>
+                    <div class="card-footer bg-white border-0 py-3 px-4 text-end">
+                        <button class="btn btn-outline-danger rounded-pill px-4" onclick="clearCart()">
+                            <i class="fa-solid fa-trash-can me-2"></i>Xóa sạch giỏ hàng
+                        </button>
+                    </div>
                 </div>
             </div>
             <div class="col-lg-4">
@@ -149,6 +154,37 @@
                                 }).then(() => {
                                     location.reload();
                                 });
+                            }
+                        }
+                    });
+                }
+            });
+        }
+        function clearCart() {
+            Swal.fire({
+                title: 'Xóa toàn bộ giỏ hàng?',
+                text: "Bạn có chắc chắn muốn xóa tất cả sản phẩm đang có trong giỏ hàng?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ef4444',
+                cancelButtonColor: '#6b7280',
+                confirmButtonText: 'Xóa sạch',
+                cancelButtonText: 'Hủy bỏ',
+                reverseButtons: true,
+                customClass: {
+                    container: 'rounded-4',
+                    popup: 'rounded-4',
+                    confirmButton: 'rounded-3 fw-bold px-4 py-2',
+                    cancelButton: 'rounded-3 fw-bold px-4 py-2'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: '/Cart/ClearCart',
+                        type: 'POST',
+                        success: function (response) {
+                            if (response.success) {
+                                location.reload();
                             }
                         }
                     });
